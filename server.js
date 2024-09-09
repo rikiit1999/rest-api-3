@@ -103,15 +103,39 @@ app.delete('/api/delete-users', async (req, res) => {
 // get list all of users
 app.get('/api/get-all-users', async (req, res) => {
     try {
-        const { fullname, phoneNumber, email, username } = req.query;
-        let result;
-
         if (!req.query.fullname || !req.query.phoneNumber || !req.query.email || !req.query.username){
-            result = await Employee.find(req.query); // no filter, get all   
+            const result = await Employee.find(req.query);
             console.log('alo 1');
             return res.status(200).json({message: 'Lấy ra danh sách người dùng (theo filter) thành công', result: result});            
         }
         console.log('alo 2');
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({error: error, message: 'Có lỗi xảy ra'});
+    }
+});
+
+// Activate account (isActive: 0/1), default: 0
+app.put('/api/activate', async (req, res) => {
+    try {
+        const username = await Employee.findOne({ username: req.query.username }).exec();
+        console.log('username: ', username);
+
+        if (!username) {
+            return res.status(404).json({message: 'Không tìm thấy username', error: 'Not found'});
+        }
+                
+        
+        if (username.isActive == 1) {
+            const conditions = await Employee.findOne({ username: req.query.username }).exec();
+            const update = await Employee.updateOne(conditions, { isActive: 0 });            
+            return res.status(200).json({message: 'Thay đổi isActive thành công', result: update});            
+        }
+
+        const conditions = await Employee.findOne({ username: req.query.username }).exec();
+        const update = await Employee.updateOne(conditions, { isActive: 1 });        
+        return res.status(200).json({message: 'Thay đổi isActive thành công', result: update});           
     }
     catch (error) {
         console.error(error);

@@ -6,7 +6,7 @@ const EmployeeSchema = mongoose.Schema({
     email: { type: String, required: true },
     username: { type: String, required: true },
     password: { type: String, required: true },
-    isActive: { type: Number, default: 1 },
+    isActive: { type: Number, default: 0 },
 },{
     timestamps: true
 });
