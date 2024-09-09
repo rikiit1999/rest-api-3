@@ -123,9 +123,8 @@ app.put('/api/activate', async (req, res) => {
         console.log('username: ', username);
 
         if (!username) {
-            return res.status(404).json({message: 'Không tìm thấy username', error: 'Not found'});
-        }
-                
+            return res.status(404).json({message: 'Không tìm thấy user để kích hoạt', error: 'Not found'});
+        }                
         
         if (username.isActive == 1) {
             const conditions = await Employee.findOne({ username: req.query.username }).exec();
