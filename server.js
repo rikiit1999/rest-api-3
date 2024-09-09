@@ -100,7 +100,7 @@ app.delete('/api/delete-users', async (req, res) => {
     }
 });
 
-// get list all of users
+// get list all of users by filter
 app.get('/api/get-all-users', async (req, res) => {
     try {
         if (!req.query.fullname || !req.query.phoneNumber || !req.query.email || !req.query.username){
@@ -117,7 +117,7 @@ app.get('/api/get-all-users', async (req, res) => {
 });
 
 // Activate account (isActive: 0/1), default: 0
-app.put('/api/activate', async (req, res) => {
+app.patch('/api/activate', async (req, res) => {
     try {
         const username = await Employee.findOne({ username: req.query.username }).exec();
         console.log('username: ', username);
@@ -135,6 +135,31 @@ app.put('/api/activate', async (req, res) => {
         const conditions = await Employee.findOne({ username: req.query.username }).exec();
         const update = await Employee.updateOne(conditions, { isActive: 1 });        
         return res.status(200).json({message: 'Thay đổi isActive thành công', result: update});           
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({error: error, message: 'Có lỗi xảy ra'});
+    }
+});
+
+// Change password
+app.patch('/api/change-password', async (req, res) => {
+    try{
+        const username = req.query.username;
+        const checkUsername = await Employee.findOne({username: username}).exec();
+        const password = req.body.password;
+
+        // Hash the password before saving it to the database
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        
+        if (!checkUsername) {
+            return res.status(404).json({message: 'Không tìm thấy username', error: 'Not found'});
+        }
+        const conditions = checkUsername;
+        const update = await Employee.updateOne(conditions, { password: hashedPassword });
+        
+        return res.status(200).json( {message: 'Update password thành công', result: update});
     }
     catch (error) {
         console.error(error);
