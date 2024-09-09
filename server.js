@@ -78,7 +78,7 @@ app.get('/api/login', async (req, res) => {
 });
 
 // delete users
-app.delete('/api/delete', async (req, res) => {
+app.delete('/api/delete-users', async (req, res) => {
     try {
         const { username } = req.query;
         const checkUsername = await Employee.find({ username });
@@ -87,15 +87,32 @@ app.delete('/api/delete', async (req, res) => {
             return res.status(404).json({message: 'Không tìm thấy username', error: 'Not found'});
         }
         else {
-            const username = req.query.username;                                                     
-            
-            const count = await Employee.countDocuments({ username: { $exists: true } });
+            const username = req.query.username;                                                                             
             
             const result = await Employee.deleteMany({ username: username });            
 
-            return res.status(200).json({message: `Xóa thành công: ${result.deletedCount}/${count}`, result: result});
+            return res.status(200).json({message: `Xóa thành công: ${result.deletedCount}/${checkUsername.length}`, result: result});
         }        
     } 
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({error: error, message: 'Có lỗi xảy ra'});
+    }
+});
+
+// get list all of users
+app.get('/api/get-all-users', async (req, res) => {
+    try {
+        const { fullname, phoneNumber, email, username } = req.query;
+        let result;
+
+        if (!req.query.fullname || !req.query.phoneNumber || !req.query.email || !req.query.username){
+            result = await Employee.find(req.query); // no filter, get all   
+            console.log('alo 1');
+            return res.status(200).json({message: 'Lấy ra danh sách người dùng (theo filter) thành công', result: result});            
+        }
+        console.log('alo 2');
+    }
     catch (error) {
         console.error(error);
         return res.status(500).json({error: error, message: 'Có lỗi xảy ra'});
