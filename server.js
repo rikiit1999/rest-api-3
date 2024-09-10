@@ -103,12 +103,30 @@ app.delete('/api/delete-users', async (req, res) => {
 // get list all of users by filter
 app.get('/api/get-all-users', async (req, res) => {
     try {
-        if (!req.query.fullname || !req.query.phoneNumber || !req.query.email || !req.query.username){
-            const result = await Employee.find(req.query);
-            console.log('alo 1');
-            return res.status(200).json({message: 'Lấy ra danh sách người dùng (theo filter) thành công', result: result});            
+        //const result = await Employee.find(req.query);            
+        //return res.status(200).json({message: 'Lấy ra danh sách người dùng (theo filter) thành công', result: result});
+        const findFields = {};
+        console.log('findFields', findFields);
+
+        if (req.query.fullname) {
+            findFields.fullname = req.query.fullname;
+            console.log('findFields: ', findFields);
         }
-        console.log('alo 2');
+        if (req.query.phoneNumber) {
+            findFields.phoneNumber = req.query.phoneNumber;
+            console.log('findFields: ', findFields);
+        }
+        if (req.query.email) {
+            findFields.email = req.query.email;
+            console.log('findFields: ', findFields);
+        }
+        if (req.query.username) {
+            findFields.username = req.query.username;
+            console.log('findFields: ', findFields);
+        }
+
+        const result = await Employee.find( findFields ).sort( { 'createdAt': -1 } );
+        return res.status(200).json({message: 'Lấy ra danh sách người dùng (theo filter) thành công', result: result});
     }
     catch (error) {
         console.error(error);
@@ -126,14 +144,14 @@ app.patch('/api/activate', async (req, res) => {
             return res.status(404).json({message: 'Không tìm thấy user để kích hoạt', error: 'Not found'});
         }                
         
-        if (username.isActive == 1) {
-            const conditions = await Employee.findOne({ username: req.query.username }).exec();
-            const update = await Employee.updateOne(conditions, { isActive: 0 });            
-            return res.status(200).json({message: 'Thay đổi isActive thành công', result: update});            
-        }
+        // if (username.isActive == 1) {
+        //     const conditions = await Employee.findOne({ username: req.query.username }).exec();
+        //     const update = await Employee.updateOne(conditions, { isActive: 0 });            
+        //     return res.status(200).json({message: 'Thay đổi isActive thành công', result: update});            
+        // }
 
         const conditions = await Employee.findOne({ username: req.query.username }).exec();
-        const update = await Employee.updateOne(conditions, { isActive: 1 });        
+        const update = await Employee.updateOne(conditions, { isActive: !username.isActive });        
         return res.status(200).json({message: 'Thay đổi isActive thành công', result: update});           
     }
     catch (error) {
@@ -202,7 +220,7 @@ app.patch('/api/update-user', async (req, res) => {
         }
                 
         const result = await Employee.updateOne({ username: req.query.username }, updateFields);
-        return res.status(200).json({message: 'Update thành công', password: result});           
+        return res.status(200).json({message: 'Update thành công', result: result});           
     }
     catch (error) {
         console.error(error);
