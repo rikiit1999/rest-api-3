@@ -105,27 +105,37 @@ app.get('/api/get-all-users', async (req, res) => {
     try {
         //const result = await Employee.find(req.query);            
         //return res.status(200).json({message: 'Lấy ra danh sách người dùng (theo filter) thành công', result: result});
-        const findFields = {};
-        console.log('findFields', findFields);
+        const searchFields = {};
 
         if (req.query.fullname) {
-            findFields.fullname = req.query.fullname;
-            console.log('findFields: ', findFields);
+            searchFields.fullname = req.query.fullname;
         }
         if (req.query.phoneNumber) {
-            findFields.phoneNumber = req.query.phoneNumber;
-            console.log('findFields: ', findFields);
+            searchFields.phoneNumber = req.query.phoneNumber;
         }
         if (req.query.email) {
-            findFields.email = req.query.email;
-            console.log('findFields: ', findFields);
+            searchFields.email = req.query.email;
         }
         if (req.query.username) {
-            findFields.username = req.query.username;
-            console.log('findFields: ', findFields);
+            searchFields.username = req.query.username;
         }
 
-        const result = await Employee.find( findFields ).sort( { 'createdAt': -1 } );
+        // let page = req.query.page;
+        let page = parseInt( req.query.page );
+        let pageSize = parseInt ( req.query.pageSize );
+        let result;        
+
+        // if (page) {
+        //     if (page == 1){
+        //         page = 1;
+        //     }
+        // } 
+        
+        const skip = (page - 1) * pageSize;       
+        console.log('skip: ', skip);        
+        console.log('pageSize: ', pageSize);    
+
+        result = await Employee.find( searchFields ).sort( { 'createdAt': 1 } ).skip( skip ).limit( pageSize );
         return res.status(200).json({message: 'Lấy ra danh sách người dùng (theo filter) thành công', result: result});
     }
     catch (error) {
