@@ -6,13 +6,7 @@ const con = process.env.CONNECTION;
 
 const app = express();
 
-const registerRoute = require('./routes/registerRoute');
-const loginRoute = require('./routes/loginRoute');
-const deleteUsersRoute = require('./routes/deleteUsersRoute');
-const getAllUsersRoute = require('./routes/getAllUsersRoute');
-const activateAccountRoute = require('./routes/activateAccountRoute');
-const changePasswordRoute = require('./routes/changePasswordRoute');
-const updateUserRoute = require('./routes/updateUserRoute');
+const router = require('./routes/index');
 
 try {
     mongoose.connect(con);    
@@ -29,29 +23,10 @@ app.get('/', (req, res) => {
     res.send('GET request to the homepage');    
 });
 
-// register
-app.use('/api/register', registerRoute);
-
-// login
-app.use('/api/login', loginRoute);
-
-// delete users
-app.use('/api/delete-users', deleteUsersRoute);
-
-// get list all of users by filter
-app.use('/api/get-all-users', getAllUsersRoute);
+app.use('/api', router);
 
 // let testString = 'riki.it.att@gmail.com';
 // cut string
-
-// Activate account (isActive: 0/1), default: 0
-app.use('/api/activate', activateAccountRoute);
-
-// Change password
-app.use('/api/change-password', changePasswordRoute);
-
-// Update user in4
-app.use('/api/update-user', updateUserRoute);
 
 app.listen(port, () => {
     console.log(`Listening for requests on port: ${port}`);
