@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
     res.send('GET request to the homepage');    
 });
 
-app.use('/api', router);
+app.use('/', router);
 
 // let testString = 'riki.it.att@gmail.com';
 // cut string
