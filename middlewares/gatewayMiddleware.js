@@ -34,9 +34,17 @@ const isAdmin = async (req, res, next) => {
 };
 
 const isUser = async (req, res, next) => {
-    if (req.employee.role === 'admin') {
+    const loggedInUser = req.employee;
+    const usernameBeingUpdated = req.query.username;
+
+    if (loggedInUser.role === 'admin') {
         return res.status(403).json({ message: 'Access denied, user only.' });
     }
+    
+    if (loggedInUser.username !== usernameBeingUpdated) {
+        return res.status(403).json({ message: 'Access denied. You can only modify your own information.' });
+    }
+
     next();
 };
   

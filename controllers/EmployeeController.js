@@ -45,7 +45,7 @@ const login = async (req, res) => {
 
             if (!checkPassword) return res.status(404).json({message: 'thất bại', error: 'sai thông tin pass'});
             
-            const token = jwt.sign({ id: checkUsername._id, role: checkUsername.role }, process.env.JWT_SECRET, { expiresIn: '1h' });            
+            const token = jwt.sign({ id: checkUsername._id, role: checkUsername.role, username: checkUsername.username }, process.env.JWT_SECRET, { expiresIn: '1h' });            
             return res.status(200).json( {message: 'Đăng nhập thành công', token: token} );            
         }                
     }
