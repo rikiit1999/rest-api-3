@@ -25,6 +25,11 @@ app.get('/', (req, res) => {
 
 app.use('/', router);
 
+// use the router and 401 anything falling through
+app.use('/', router, (req, res) => {
+    // res.sendStatus(401);
+});
+
 // let testString = 'riki.it.att@gmail.com';
 // cut string
 

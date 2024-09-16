@@ -7,6 +7,7 @@ const EmployeeSchema = mongoose.Schema({
     username: { type: String, required: true },
     password: { type: String, required: true },
     isActive: { type: Number, default: 0 },
+    role: { type: String, enum: ['user', 'admin'], default: 'user' }
 },{
     timestamps: true
 });

@@ -1,5 +1,6 @@
 const Employee = require('../models/Employee');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const register = async (req, res) => {        
     try {
@@ -20,7 +21,7 @@ const register = async (req, res) => {
         else {
             //const result = await Employee.create(req.body);          
             const result = await Employee.create({fullname, phoneNumber, email, username, password: hashedPassword});          
-        
+            
             return res.status(200).json({message: 'Đăng ký thành công', result: result}); 
         }                   
     }
@@ -44,7 +45,8 @@ const login = async (req, res) => {
 
             if (!checkPassword) return res.status(404).json({message: 'thất bại', error: 'sai thông tin pass'});
             
-            return res.status(200).json( {message: 'Đăng nhập thành công'} );            
+            const token = jwt.sign({ id: checkUsername._id, role: checkUsername.role }, process.env.JWT_SECRET, { expiresIn: '1h' });            
+            return res.status(200).json( {message: 'Đăng nhập thành công', token: token} );            
         }                
     }
     catch (error) {
@@ -132,15 +134,12 @@ const activateAccount = async (req, res) => {
         if (!username) {
             return res.status(404).json({message: 'Không tìm thấy user để kích hoạt', error: 'Not found'});
         }                
-        
-        // if (username.isActive == 1) {
-        //     const conditions = await Employee.findOne({ username: req.query.username }).exec();
-        //     const update = await Employee.updateOne(conditions, { isActive: 0 });            
-        //     return res.status(200).json({message: 'Thay đổi isActive thành công', result: update});            
-        // }
 
         const conditions = await Employee.findOne({ username: req.query.username }).exec();
-        const update = await Employee.updateOne(conditions, { isActive: !username.isActive });        
+        // const update = await Employee.updateOne(conditions, { isActive: !username.isActive });        
+        const update = await Employee.updateOne(
+            { username: req.query.username },  { isActive: !username.isActive }   
+        );
         return res.status(200).json({message: 'Thay đổi isActive thành công', result: update});           
     }
     catch (error) {
@@ -217,6 +216,10 @@ const updateUser = async (req, res) => {
     }
 };
 
+// use the router and 401 anything falling through
+const admin = async(req, res) => {
+    res.sendStatus(401);
+};
+
 module.exports = { register, login, deleteUsers, getAllUsers, 
-    activateAccount, changePassword, updateUser };
-// module.exports = login;
+    activateAccount, changePassword, updateUser, admin };

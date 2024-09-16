@@ -1,15 +1,18 @@
 const Router = require('express');
 const { register, login, deleteUsers, getAllUsers, 
-    activateAccount, changePassword, updateUser } = require('../controllers/EmployeeController');
+    activateAccount, changePassword, updateUser, admin } = require('../controllers/EmployeeController');
 
 const employeeRouter = Router();
 
+const { gatewayMiddleware, isAdmin } = require('../middlewares/gatewayMiddleware');
+
 employeeRouter.post('/register', register);
 employeeRouter.get('/login', login);
-employeeRouter.delete('/delete-users', deleteUsers);
-employeeRouter.get('/get-all-users', getAllUsers);
-employeeRouter.patch('/activate', activateAccount);
-employeeRouter.patch('/change-password', changePassword);
-employeeRouter.patch('/update-user', updateUser);
+employeeRouter.delete('/delete-users', gatewayMiddleware, isAdmin, deleteUsers);
+employeeRouter.get('/get-all-users', gatewayMiddleware, isAdmin, getAllUsers);
+employeeRouter.patch('/activate', gatewayMiddleware, isAdmin, activateAccount);
+employeeRouter.patch('/change-password', gatewayMiddleware, changePassword);
+employeeRouter.patch('/update-user', gatewayMiddleware, updateUser);
+employeeRouter.get('/admin', admin);
 
 module.exports = employeeRouter;
