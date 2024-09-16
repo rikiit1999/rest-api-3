@@ -162,8 +162,8 @@ const changePassword = async (req, res) => {
         if (!checkUsername) {
             return res.status(404).json({message: 'Không tìm thấy username', error: 'Not found'});
         }
-        const conditions = checkUsername;
-        const update = await Employee.updateOne(conditions, { password: hashedPassword });
+        //const conditions = checkUsername;
+        const update = await Employee.updateOne( { username: username }, { password: hashedPassword });
         
         return res.status(200).json( {message: 'Update password thành công', result: update});
     }

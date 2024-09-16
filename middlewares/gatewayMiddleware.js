@@ -32,5 +32,12 @@ const isAdmin = async (req, res, next) => {
     }
     next();
 };
+
+const isUser = async (req, res, next) => {
+    if (req.employee.role === 'admin') {
+        return res.status(403).json({ message: 'Access denied, user only.' });
+    }
+    next();
+};
   
-module.exports = { gatewayMiddleware, isAdmin };
+module.exports = { gatewayMiddleware, isAdmin, isUser };
